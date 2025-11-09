@@ -1,0 +1,8 @@
+Project: Supply Chain Resilience & Risk Advisory
+Client: Top-5 Consumer Electronics Company
+Problem: Extreme supply chain volatility. They had "stock-outs" on 3 flagship products because they were "blind" to disruptions in their Tier-2 and Tier-3 supplier base.
+Our Role (Strategy/Advisory):
+1.  **Supply Chain Vulnerability Analysis:** We conducted an in-depth analysis of their multi-tier supply chain, mapping their suppliers and identifying 5 "single-source" critical vulnerabilities.
+2.  **Strategic Recommendation:** We recommended a new strategy based on a "Digital Twin" of their supply chain for real-time visibility and an "AI Risk Sensing" platform.
+3.  **Business Case & Modeling:** We modeled the ROI for this new strategy, proving it could prevent 60% of stock-out events by providing 3-4 weeks of advance warning on disruptions.
+Result: The client's COO adopted our recommendation. The "AI Risk Sensing" platform is now a core part of their S&OP process.

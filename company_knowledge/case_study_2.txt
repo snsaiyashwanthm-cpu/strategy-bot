@@ -1,0 +1,9 @@
+Project: 5G & Private Network (B2B) Go-to-Market Strategy
+Client: Tier-1 National Telecom Carrier (Telecom)
+Problem: Massive CAPEX on 5G spectrum with flat consumer revenue. The board demanded a credible strategy to unlock new, high-margin B2B revenue streams.
+Our Role (Strategy/Advisory):
+1.  **Market Opportunity Analysis:** We sized the addressable B2B market for 5G, identifying "Private 5G" and "Edge Compute" as the two largest value pools.
+2.  **Vertical Prioritization:** We analyzed 8 industry verticals and recommended a GTM-strategy focused on 3 high-potential "anchor" segments: Smart Manufacturing, Logistics/Ports, and Tele-health.
+3.  **Strategic GTM Plan:** We developed the complete GTM plan, including our advisory on partnership models, pricing/packaging structures, and sales-force incentive models.
+4.  **Financial Modeling:** We built the 5-year financial model for the new B2B division, projecting a $750M pipeline.
+Result: Our strategy was adopted by the board. The client launched two new B2B service lines and used our "anchor client" GTM plan to secure a flagship manufacturing contract.

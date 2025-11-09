@@ -1,0 +1,8 @@
+Project: Content Strategy & Subscriber Churn Analysis
+Client: Major Media & Entertainment Studio (Media)
+Problem: High subscriber churn on their new streaming platform. The multi-million dollar content acquisition budget was based on "gut-feel," not data, leading to poor content-ROI.
+Our Role (Strategy/Advisory):
+1.  **Data-Driven Churn Analysis:** We analyzed their viewer data to identify the key *leading indicators* of churn. Our analysis discovered that "at-risk" users had 50% less engagement with "niche" content.
+2.  **Content Strategy Recommendation:** We advised the client to shift 20% of their "blockbuster" budget to 3 specific "high-value" niche genres that our analysis showed drove the highest retention.
+3.  **Retention Program Strategy:** We provided a strategic framework for a new "proactive retention" program, advising the marketing team on *which* offers to send to *which* "at-risk" segments for maximum impact.
+Result: The client adopted our new content-spend model. Our strategy directly led to a 12% reduction in subscriber churn and a 25% improvement in content-acquisition ROI.

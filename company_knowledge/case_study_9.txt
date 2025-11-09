@@ -1,0 +1,8 @@
+Project: Digital Subscriber Acquisition & Retention Strategy
+Client: Global News & Media Publisher
+Problem: A forced strategic shift from ad-based revenue to subscriptions. Their generic "most popular articles" content was failing to engage users or drive conversions.
+Our Role (Strategy/AdFvisory):
+1.  **Market Research & User Segmentation:** We conducted in-depth market research to segment their 10M+ users. We identified a "high-value" niche segment that was 5x more likely to subscribe.
+2.  **Personalization Strategy:** We developed the strategy to move from a "one-size-fits-all" model to a "hyper-personalization" engine.
+3.  **Roadmap & Recommendation:** We delivered the strategic roadmap for a new recommender system and A/B testing framework, advising them on how to leverage user data to drive a "sticky" experience.
+Result: Our strategy led to a 40% increase in CTR on recommended articles and a 5% lift in subscription conversions.

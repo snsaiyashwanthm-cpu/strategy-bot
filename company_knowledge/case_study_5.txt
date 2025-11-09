@@ -1,0 +1,8 @@
+Project: AI in R&D - Effectiveness & Strategy
+Client: Fabless Semiconductor Designer
+Problem: Soaring R&D costs and multi-year design cycles. The verification phase was a major bottleneck, and competitors were getting to market 6-9 months faster.
+Our Role (Strategy/Advisory):
+1.  **R&D Lifecycle Benchmarking:** We analyzed their 24-month chip design lifecycle, identifying the verification phase as the primary bottleneck, costing 30% more time than industry best-in-class.
+2.  **AI in R&D Opportunity Sizing:** We researched and presented the "AI in EDA" landscape. We identified AI-based verification and RL for chip layout as two strategic opportunities, quantifying a potential 30% reduction in cycle time.
+3.  **R&D Data Strategy Advisory:** We delivered the strategic advisory for a new R&D data platform, outlining the "must-have" capabilities to enable cross-domain AI analysis.
+Result: Our strategic recommendations were adopted by the CTO. The client initiated a new "AI for R&D" program that achieved a 10% improvement in PPA on its next-gen chip.

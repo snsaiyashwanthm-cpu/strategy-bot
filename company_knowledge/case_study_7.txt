@@ -1,0 +1,9 @@
+Project: "Zero Trust" Security Strategy & Roadmap
+Client: Large Healthcare Provider
+Problem: A major ransomware attack exposed 1M+ patient records (PHI). The board had lost confidence in the CISO. Their "castle-and-moat" security model was proven obsolete.
+Our Role (Strategy/Advisory):
+1.  **Post-Breach Capability Assessment:** We conducted a rapid assessment of their security posture, people, and processes, benchmarking them against the NIST "Zero Trust" framework.
+2.  **Strategic Gap Analysis:** We identified 3 critical gaps: weak identity management, a "flat" network allowing lateral movement, and a slow, reactive SOC.
+3.  **"Zero Trust" Strategic Roadmap:** We developed the 18-month strategic roadmap to move from their legacy model to a "Zero Trust" posture ("never trust, always verify").
+4.  **SOC Operating Model Advisory:** We advised on the new SOC operating model and provided the vendor-agnostic capability matrix for the AI-powered SIEM/SOAR tech stack required to reduce "mean time to detect" from days to minutes.
+Result: Our strategy and roadmap were presented to the board and adopted in full. The client successfully met all HIPAA regulatory requirements within 12 months.
