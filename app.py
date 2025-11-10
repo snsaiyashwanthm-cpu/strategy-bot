@@ -50,6 +50,7 @@ tab1, tab2 = st.tabs(["Proposal Generator", "Help & Support 💬"])
 
 # --- ALL YOUR APP CODE GOES IN TAB 1 ---
 with tab1:
+    st.image("assets/logo.png", width=250) # <-- LINE FOR IMAGE ADDITION
     st.title("A+ Strategy Proposal Generator 🤖")
     st.markdown("---")
 
