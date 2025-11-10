@@ -2,6 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import os
 import re # We've added "re" (Regular Expressions) to help us parse the text
+import streamlit.components.v1 as components
 
 # --- Helper function to read knowledge files ---
 def get_company_knowledge():
@@ -208,11 +209,22 @@ with tab1:
 with tab2:
     st.header("Help & Support Bot 💬")
     st.markdown("Ask any questions about how to use the tool, what the AI does, or our firm's capabilities.")
-    
-    # This URL is created using your Chatbot ID
-    # This is the "full-page" embed URL for Chatbase
+
+    # This is your Chatbot ID
     chatbot_id = "au9YsHjES4gc3mqHjPrOK"
+    # This is the "full-page" embed URL for Chatbase
     chat_url = f"https://www.chatbase.co/chatbot-iframe/{chatbot_id}"
-    
-    # st.iframe is the correct, modern way to embed a URL
-    st.iframe(chat_url, height=600, scrolling=True)
+
+    # We are now building the iframe manually using the older components.html
+    # This bypasses the AttributeError
+    iframe_code = f"""
+    <iframe
+        src="{chat_url}"
+        style="width: 100%; height: 600px; border: none; border-radius: 8px;"
+        title="Help Chatbot"
+    ></iframe>
+    """
+
+    # This uses the older, stable command
+    components.html(iframe_code, height=610)
+# -------------------------------------------------
