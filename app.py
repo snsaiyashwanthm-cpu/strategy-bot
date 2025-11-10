@@ -198,7 +198,7 @@ if st.button("Generate Proposal Blueprint"):
         # Show an error if the text box is empty
         st.error("Please paste the client objective first!")
         
-        # --- THIS IS YOUR NEW "HELP BOT" WIDGET ---
+# --- THIS IS YOUR NEW "HELP BOT" WIDGET ---
 
 # Replace the "YOUR-CHATBOT-ID-GOES-HERE" with the Chatbot ID you just copied from Chatbase.
 
