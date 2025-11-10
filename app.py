@@ -2,7 +2,6 @@ import streamlit as st
 import google.generativeai as genai
 import os
 import re # We've added "re" (Regular Expressions) to help us parse the text
-import streamlit.components.v1 as components
 
 # --- Helper function to read knowledge files ---
 def get_company_knowledge():
@@ -198,10 +197,12 @@ if st.button("Generate Proposal Blueprint"):
     else:
         # Show an error if the text box is empty
         st.error("Please paste the client objective first!")
+        
         # --- THIS IS YOUR NEW "HELP BOT" WIDGET ---
 
 # Replace the "YOUR-CHATBOT-ID-GOES-HERE" with the Chatbot ID you just copied from Chatbase.
 
+# Replace this with the *exact* embed code you got from Chatbase
 chatbot_code = """
 <script>
   window.chatbaseConfig = {
@@ -211,6 +212,6 @@ chatbot_code = """
 <script src="https://www.chatbase.co/embed.min.js" id="au9YsHjES4gc3mqHjPrOK" defer></script>
 """
 
-# This line "injects" the HTML code into your app
-components.html(chatbot_code, height=70)
-# ------------------------------------------
+# This new line injects the code directly into the page
+st.html(chatbot_code)
+# -------------------------------------------------
