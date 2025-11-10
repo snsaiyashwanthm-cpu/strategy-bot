@@ -1,0 +1,16 @@
+[theme]
+
+# This is the "MBB" Blue for buttons and key elements
+primaryColor="#00529B"
+
+# This is the main page background (a very light, clean grey)
+backgroundColor="#F0F2F6"
+
+# This is the background for text boxes, expanders, etc. (clean white)
+secondaryBackgroundColor="#FFFFFF"
+
+# This is the main text color (a dark, professional grey, not harsh black)
+textColor="#31333F"
+
+# Use a standard, clean sans-serif font
+font="sans serif"
