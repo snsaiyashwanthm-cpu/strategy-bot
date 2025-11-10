@@ -1,9 +1,0 @@
-Project: "Smart Factory" (Industry 4.0) Strategic Roadmap
-Client: Automotive Parts Manufacturer (Electronics)
-Problem: The client's OEE (Overall Equipment Effectiveness) was 15 points behind their best-in-class competitors, primarily due to unplanned downtime.
-Our Role (Strategy/Advisory):
-1.  **OEE Benchmarking & Gap Analysis:** We conducted a deep-dive analysis of their 5 key production lines, benchmarking them against competitors to identify and quantify the "OEE gap."
-2.  **Value-Driver Identification:** Our analysis proved that 70% of the OEE gap was from "unplanned machine downtime." We identified Predictive Maintenance (PdM) as the #1 value-driver.
-3.  **Industry 4.0 Strategic Roadmap:** We developed the 3-year "Smart Factory" strategy. We created the business case showing a 40% reduction in downtime was achievable via a PdM pilot.
-4.  **Vendor Landscape & Advisory:** We provided an independent advisory brief on the "IoT / Digital Twin" vendor landscape to guide their procurement and partnership strategy.
-Result: The board approved the $1.9M pilot based on our business case. The client followed our strategic roadmap and increased OEE from 60% to 78%.

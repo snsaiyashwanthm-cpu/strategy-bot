@@ -1,9 +1,0 @@
-Project: Generative AI Strategic Assessment & Roadmap
-Client: Global SaaS Leader (Tech)
-Problem: The board was concerned about being disrupted by Gen AI. The firm had no central strategy, and "random acts of AI" were appearing with no clear ROI.
-Our Role (Strategy/Advisory):
-1.  **Gen AI Readiness Assessment:** We benchmarked the client's data maturity, tech stack, and talent against their key competitors, identifying critical gaps.
-2.  **Use Case Prioritization:** We analyzed 5 business units and identified 20+ potential use cases. We created a value-creation model to prioritize 3 "high-impact" initiatives (e.g., L1 support automation).
-3.  **Business Case & Financial Model:** We developed the end-to-end business case, showing a $2.2M investment could yield a 30% cost reduction and 20-point CSAT increase.
-4.  **Strategic Roadmap:** We delivered a 24-month strategic roadmap, including the "build vs. buy vs. partner" framework and our recommendations for a new "AI Center of Excellence" operating model.
-Result: Our business case was presented to the board, securing the $2.2M budget. The client is following our roadmap, starting with the "Agent Co-pilot" initiative.

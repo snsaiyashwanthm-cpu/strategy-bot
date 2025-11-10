@@ -1,8 +1,0 @@
-Project: Network OpEx Reduction & AIOps Strategy
-Client: Tier-1 Mobile Network Operator
-Problem: High operating costs (OpEx) for managing their 50,000+ cell towers. Network faults were handled *reactively*, requiring expensive emergency "truck rolls."
-Our Role (Strategy/Advisory):
-1.  **OpEx Driver Analysis:** We analyzed all network OpEx drivers and found that "truck rolls" represented a $50M annual cost and were the #1 source of inefficiency.
-2.  **AIOps Business Case:** We developed the business case for an "AIOps" (AI for IT Operations) strategy. We proved that a *predictive* maintenance model could reduce truck rolls by 30%.
-3.  **Data Strategy Advisory:** We outlined the data strategy required to enable AIOps, advising them on how to centralize their 1,000s of data streams (equipment logs, weather, alarms) for analysis.
-Result: The client adopted our strategy, which directly led to a 30% reduction in "truck rolls" and $50M in annual savings.

@@ -1,8 +1,0 @@
-Project: Hybrid Cloud Strategy & Financial Modeling
-Client: Legacy Retail Bank (Financial Services)
-Problem: The on-premise mainframe infrastructure was a strategic bottleneck. Dev cycles were 6+ months, costs were high, and they couldn't compete with new digital-native "fintech" banks.
-Our Role (Strategy/Advisory):
-1.  **TCO & Application Portfolio Analysis:** We analyzed their 100+ critical applications. We created a TCO model proving a hybrid-cloud model could reduce infrastructure costs by 35%.
-2.  **Hybrid Cloud Strategy:** We advised on the optimal "to-be" hybrid strategy: keep core-ledger on-prem (for regulation) but migrate customer-facing apps to a mix of AWS and Azure.
-3.  **Cloud Operating Model Advisory:** We delivered the strategic framework for a new Cloud Center of Excellence (CCOE), advising on the governance, FinOps, and SecOps processes required to manage a multi-cloud environment.
-Result: The client adopted our strategy, unlocking a 70% faster "time-to-market" for new digital products.
