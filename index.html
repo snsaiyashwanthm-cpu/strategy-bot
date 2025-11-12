@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 2. PptxGenJS for PowerPoint Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
-    <!-- 3. Chart.js is REMOVED for reliability -->
     
     <style>
         /* AESTHETIC CHANGE: Use a modern 'Inter' font */
@@ -48,67 +47,29 @@
             padding-right: 2.5rem;
         }
 
-        /* AESTHETIC CHANGE: Custom styling for the output accordion */
-        details {
-            background: #1e293b; /* slate-800 */
-            border: 1px solid #334155; /* slate-700 */
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
-            overflow: hidden;
-        }
-        summary {
-            padding: 1rem;
-            cursor: pointer;
-            font-weight: 600;
-            color: #e2e8f0; /* slate-200 */
-            list-style: none;
-            position: relative;
-            transition: background-color 0.2s;
-        }
-        summary:hover {
-            background: #334155; /* slate-700 */
-        }
-        summary::before {
-            content: '+';
-            font-size: 1.5rem;
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            transition: transform 0.2s;
-        }
-        details[open] summary::before {
-            transform: translateY(-50%) rotate(45deg);
-        }
-        details > div {
-            padding: 1rem;
-            border-top: 1px solid #334155; /* slate-700 */
-            color: #cbd5e1; /* slate-300 */
-        }
-        details p { margin-bottom: 0.75rem; }
-        details ul { margin-left: 1.5rem; list-style-type: disc; margin-bottom: 1rem; }
-        details strong { color: #ffffff; font-weight: 600; }
-        
-        /* Prose styles for Part 1 Analysis & Part 2 Blueprint */
+        /* Prose styles for the generated Markdown output */
         .prose-custom {
-            color: #cbd5e1;
+            color: #cbd5e1; /* slate-300 */
+            max-width: none;
         }
         .prose-custom h2 {
-            font-size: 1.5rem;
+            font-size: 1.5rem; /* 24px */
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 1rem;
             margin-top: 2rem;
+            border-bottom: 1px solid #334155; /* slate-700 */
+            padding-bottom: 0.5rem;
         }
         .prose-custom h3 {
-            font-size: 1.25rem;
+            font-size: 1.25rem; /* 20px */
             font-weight: 600;
-            color: #e2e8f0;
+            color: #e2e8f0; /* slate-200 */
             margin-top: 1.5rem;
             margin-bottom: 0.5rem;
         }
         .prose-custom h4 {
-            color: #94a3b8;
+            color: #94a3b8; /* slate-400 */
             font-weight: 600;
             font-size: 1.1em;
             margin-top: 1.2em;
@@ -120,10 +81,19 @@
         .prose-custom ul {
             list-style-type: disc;
             margin-left: 1.5rem;
+            margin-bottom: 1em;
         }
         .prose-custom li {
             padding-left: 0.5rem;
             margin-bottom: 0.5em;
+        }
+        .prose-custom strong {
+            color: #ffffff; /* white */
+            font-weight: 600;
+        }
+        .prose-custom a {
+            color: #60a5fa; /* blue-400 */
+            text-decoration: underline;
         }
         /* Styles for Markdown Tables */
         .prose-custom table {
@@ -226,10 +196,9 @@
                         <p id="loading-text" class="mt-4 text-gray-400">The AI Partner is running its analysis... (This may take 30-60 seconds)</p>
                     </div>
 
-                    <!-- Main Output Area -->
-                    <div id="output-container" class="mt-6">
-                        <div id="part1-output"></div>
-                        <div id="part2-output" class="prose-custom max-w-none"></div> <!-- Added prose for Part 2 -->
+                    <!-- Main Output Area - NEW: SIMPLIFIED -->
+                    <div id="output-container" class="mt-6 prose-custom">
+                        <!-- The entire Markdown response will be rendered here -->
                     </div>
                 </div>
 
@@ -334,8 +303,7 @@
         // SECTION 2: UI & APP LOGIC
         // ----------------------------------------
         
-        let generatedData = null; // This will hold the JSON response
-        let generatedMarkdown = ""; // This will hold the Part 2 Markdown text
+        let generatedMarkdown = ""; // This will hold the full Markdown response
 
         // --- Get all UI elements ---
         const tabBtnGen = document.getElementById('tab-btn-generator');
@@ -353,8 +321,7 @@
         
         const loadingSpinner = document.getElementById('loading-spinner');
         const loadingText = document.getElementById('loading-text');
-        const part1Output = document.getElementById('part1-output');
-        const part2Output = document.getElementById('part2-output');
+        const outputContainer = document.getElementById('output-container'); // NEW: Single output
         
         const modal = document.getElementById('modal');
         const modalTitle = document.getElementById('modal-title');
@@ -592,8 +559,8 @@
         // SECTION 5: AI "BRAIN" (PROMPT & SCHEMA)
         // -----------------------------------------------------------------
         
-        // This is the JSON schema that we *demand* the AI responds with.
-        // It has been SIMPLIFIED to be reliable. Live Data-Viz is removed.
+        // NEW: We've abandoned the complex JSON schema for Part 2.
+        // We now ask for JSON for Part 1 (reliable) and Markdown for Part 2 (reliable).
         const responseSchema = {
             type: "OBJECT",
             properties: {
@@ -609,7 +576,7 @@
                         "objection_handling": { type: "ARRAY", items: { type: "STRING" } },
                     },
                 },
-                // PART 2 IS NOW A SIMPLE STRING, NOT A COMPLEX ARRAY. THIS IS THE FIX.
+                // PART 2 IS NOW A SIMPLE STRING. THIS IS THE FIX.
                 "part2_blueprint_markdown": { 
                     type: "STRING" 
                 }
@@ -621,8 +588,7 @@
         // ----------------------------------------
         
         // --- API Key (This MUST be a RESTRICTED key) ---
-        // This is the only place you need to paste your key.
-        const API_KEY = "AIzaSyDUlVamN2fCLWHLa_9fW3B1Eq6nQ2V90tc"; 
+        const API_KEY = "PASTE_YOUR_NEW_RESTRICTED_API_KEY_HERE"; 
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${API_KEY}`;
         
         async function handleGenerate() {
@@ -645,11 +611,9 @@
             loadingSpinner.classList.remove('hidden');
             loadingText.innerText = "The AI Partner is running its analysis... (This may take 30-60 seconds)"; 
             downloadBtn.classList.add('hidden');
-            part1Output.innerHTML = "";
-            part2Output.innerHTML = "";
+            outputContainer.innerHTML = ""; // Clear the entire output container
             generateBtn.disabled = true;
             generateBtn.innerText = "Generating...";
-            generatedData = null; // Clear old JSON data
             generatedMarkdown = ""; // Clear old Markdown data
 
             try {
@@ -722,9 +686,11 @@
                        * Create an 'objection_handling' list. Proactively identify 2-3 tough objections the client might have (e.g., "This is too expensive," "Why not do this in-house?") and provide a clear, persuasive counter-argument for each.
                     
                     # --- PART 2: PPT-READY PROPOSAL BLUEPRINT (MARKDOWN STRING) ---
-                    (This part MUST be a single, long string. Generate 15-20 slides in clear Markdown.)
-                    (Use "###" for slide titles and "**" for labels like "Purpose:")
+                    (This part MUST be a single, long string. Generate 15-20 slides in clear, well-formatted Markdown.)
+                    (Use "##" for Section Dividers, "###" for slide titles, and "**" for labels like "**Purpose:**". Use "*" for bullets.)
 
+                    ## Section 1: Executive Summary
+                    
                     ### Slide 1 (Title Slide)
                     **Section:** Executive Summary
                     **Title:** A Strategic Proposal for [Client's Core Problem]
@@ -741,6 +707,9 @@
                     **Section:** Executive Summary
                     **Title:** Our Recommendation: A Phased Approach to [Client's Goal]
                     ... (and so on for 15-20 slides) ...
+
+                    ## Section 2: Our Approach
+                    ...
                 `;
 
                 // 5. Make the API call *from the user's browser*.
@@ -753,7 +722,7 @@
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: finalPrompt }] }],
                         generationConfig: {
-                            responseMimeType: "application/json",
+                            responseMfimeType: "application/json",
                             responseSchema: responseSchema
                         }
                     })
@@ -824,16 +793,15 @@
                     <ul>${(p1.objection_handling || []).map(item => `<li>${item}</li>`).join('')}</ul>
                 </div>
             `;
-            part1Output.innerHTML = part1Html;
-
+            
             // --- Render Part 2 (from Markdown) ---
             let part2Html = `
                 <h2 class="text-2xl font-bold text-white mt-8 mb-4">Part 2: PPT-Ready Proposal Blueprint</h2>
-                <div class="prose-custom max-w-none">
-                    ${markdownToHtml(p2_markdown || "<p>Part 2 was not generated. The AI may have failed to produce the slide blueprint. Please try again.</p>")}
-                </div>
+                ${markdownToHtml(p2_markdown || "<p>Part 2 was not generated. The AI may have failed to produce the slide blueprint. Please try again.</p>")}
             `;
-            part2Output.innerHTML = part2Html;
+            
+            // Combine and set the output
+            outputContainer.innerHTML = part1Html + part2Html;
         }
         
         // --- NEW: Simple Markdown to HTML converter ---
@@ -841,46 +809,33 @@
             if (!md) return '';
 
             let html = md.trim();
-            
-            // ### Slide 1 (Title) -> <h3>Slide 1 (Title)</h3>
-            html = html.replace(/### (.*?)\n/g, '<h3>$1</h3>');
-            
-            // **Label:** -> <strong>Label:</strong>
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
-            
-            // * Bullet -> <li>Bullet</li>
-            html = html.replace(/^\* (.*?)$/gm, '<li>$1</li>');
-            html = html.replace(/<li>(.*?)<\/li>\n(?!<li>)/g, '<li>$1</li></ul>'); // Close UL
-            html = html.replace(/(?!<\/ul>)<li>/g, '<ul><li>'); // Open UL
-            
-            // Handle tables
-            html = html.replace(/\|(.*?)\|\s*\n\|(.*?)\|\s*\n((?:\|.*?\n?)*)/g, (match, header, separator, body) => {
-                let table = '<table>';
-                table += '<thead><tr>';
-                header.split('|').filter(h => h.trim()).forEach(h => {
-                    table += `<th>${h.trim()}</th>`;
-                });
-                table += '</tr></thead>';
-                table += '<tbody>';
-                body.split('\n').filter(row => row.trim()).forEach(row => {
-                    table += '<tr>';
-                    row.split('|').filter(c => c.trim()).forEach(c => {
-                        table += `<td>${c.trim()}</td>`;
-                    });
-                    table += '</tr>';
-                });
-                table += '</tbody></table>';
-                return table;
-            });
+            let inList = false;
 
-            // General newlines -> <p>
-            html = html.replace(/^(?!<h3>|<li>|<ul>|<table>)(.*)$/gm, '<p>$1</p>');
-            // Cleanup empty paragraphs
-            html = html.replace(/<p><\/p>/g, '');
-            // Fix paragraphs that are actually list headers
-            html = html.replace(/<p><strong>(.*?)<\/strong><\/p><ul>/g, '<strong>$1</strong><ul>');
+            return html.split('\n').map(line => {
+                line = line.trim();
+                let lineHtml = '';
 
-            return html;
+                if (line.startsWith('## ')) { // Section
+                    if (inList) { lineHtml += '</ul>'; inList = false; }
+                    lineHtml += `<h2>${line.substring(3)}</h2>`;
+                } else if (line.startsWith('### ')) { // Slide Title
+                    if (inList) { lineHtml += '</ul>'; inList = false; }
+                    lineHtml += `<h3>${line.substring(4)}</h3>`;
+                } else if (line.startsWith('* ')) { // Bullet
+                    if (!inList) { lineHtml += '<ul>'; inList = true; }
+                    lineHtml += `<li>${line.substring(2)}</li>`;
+                } else if (line.startsWith('**') && line.includes(':**')) { // Bold label
+                    if (inList) { lineHtml += '</ul>'; inList = false; }
+                    lineHtml += `<p>${line.replace(/\*\*(.*?):\*\*/g, '<strong>$1:</strong>')}</p>`;
+                } else if (line.length > 0) { // Paragraph
+                    if (inList) { lineHtml += '</ul>'; inList = false; }
+                    lineHtml += `<p>${line}</p>`;
+                } else {
+                    if (inList) { lineHtml += '</ul>'; inList = false; }
+                }
+                
+                return lineHtml;
+            }).join('');
         }
 
         // --- PPT Export Function (REWRITTEN to parse Markdown) ---
@@ -911,10 +866,11 @@
             titleSlide.addNotes("Generated by StrategyVerse AI");
 
             // --- NEW: Part 1 Analysis Slide ---
+            // We read from the *saved JSON*, not the screen
             if (generatedData) {
                 let analysisSlide = pptx.addSlide();
                 analysisSlide.addText("Executive Summary: Engagement Analysis", { ...SLIDE_HEADLINE, y: 0.2, h: 0.5 });
-                const p1 = generatedData;
+                const p1 = generatedData; // Use the saved JSON
                 let analysisText = [
                     { text: 'Core Decision Problem:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
                     { text: p1.core_problem, options: { breakLine: true } },
@@ -931,6 +887,7 @@
             }
 
             // --- NEW: Parse Markdown for Part 2 Slides ---
+            // We split the saved Markdown string by the slide title (###)
             const slides = generatedMarkdown.split('### ');
             slides.shift(); // Remove empty element before the first "###"
 
@@ -947,13 +904,15 @@
                 const extractBullets = () => {
                     const contentMatch = slideText.match(/\*\*Key Content:\*\*(.*?)(?=\*\*|$)/s);
                     if (!contentMatch) return ['Missing content'];
-                    return contentMatch[1].split('* ')
-                                        .map(b => b.trim())
+                    // Split by lines that start with a star
+                    return contentMatch[1].split('\n* ')
+                                        .map(b => b.replace(/^\*/, '').trim()) // Clean up first bullet
                                         .filter(b => b.length > 0);
                 };
 
                 const slideTitle = slideText.substring(0, slideText.indexOf('\n')).trim();
                 const section = extract(/\*\*Section:\*\*(.*?)\n/);
+                const titleLabel = extract(/\*\*Title:\*\*(.*?)\n/); // This is the title *within* the text
                 const purpose = extract(/\*\*Purpose:\*\*(.*?)\n/);
                 const keyMessage = extract(/\*\*Key Message:\*\*(.*?)\n/);
                 const visualSpec = extract(/\*\*Visual Spec:\*\*(.*?)\n/);
@@ -963,7 +922,7 @@
 
                 // Add to PPTx
                 pptxSlide.addText(keyMessage || "Missing Key Message", SLIDE_HEADLINE);
-                pptxSlide.addText(`${section}: ${slideTitle}`, SLIDE_TITLE);
+                pptxSlide.addText(`${section}: ${titleLabel || slideTitle}`, SLIDE_TITLE);
                 pptxSlide.addText(keyContent, SLIDE_BODY);
                 
                 const notes = `
