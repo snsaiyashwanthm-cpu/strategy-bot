@@ -89,9 +89,23 @@
         details ul { margin-left: 1.5rem; list-style-type: disc; margin-bottom: 1rem; }
         details strong { color: #ffffff; font-weight: 600; }
         
-        /* Prose styles for Part 1 Analysis */
+        /* Prose styles for Part 1 Analysis & Part 2 Blueprint */
         .prose-custom {
             color: #cbd5e1;
+        }
+        .prose-custom h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+        .prose-custom h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
         }
         .prose-custom h4 {
             color: #94a3b8;
@@ -111,7 +125,7 @@
             padding-left: 0.5rem;
             margin-bottom: 0.5em;
         }
-        /* NEW: Styles for Markdown Tables */
+        /* Styles for Markdown Tables */
         .prose-custom table {
             width: 100%;
             margin-top: 1em;
@@ -215,7 +229,7 @@
                     <!-- Main Output Area -->
                     <div id="output-container" class="mt-6">
                         <div id="part1-output"></div>
-                        <div id="part2-output"></div>
+                        <div id="part2-output" class="prose-custom max-w-none"></div> <!-- Added prose for Part 2 -->
                     </div>
                 </div>
 
@@ -320,9 +334,8 @@
         // SECTION 2: UI & APP LOGIC
         // ----------------------------------------
         
-        // --- Store the generated data globally ---
         let generatedData = null; // This will hold the JSON response
-        // activeCharts is removed
+        let generatedMarkdown = ""; // This will hold the Part 2 Markdown text
 
         // --- Get all UI elements ---
         const tabBtnGen = document.getElementById('tab-btn-generator');
@@ -596,23 +609,9 @@
                         "objection_handling": { type: "ARRAY", items: { type: "STRING" } },
                     },
                 },
-                "part2_blueprint": {
-                    type: "ARRAY",
-                    items: {
-                        type: "OBJECT",
-                        properties: {
-                            "slide_number": { type: "NUMBER" },
-                            "section": { type: "STRING" },
-                            "title": { type: "STRING" },
-                            "purpose": { type: "STRING" },
-                            "key_message": { type: "STRING" },
-                            "key_content": { type: "ARRAY", items: { type: "STRING" } },
-                            "visual_spec": { type: "STRING" }, // We will ask for Markdown tables here
-                            "data_needed": { type: "STRING" },
-                            "build_guidance": { type: "STRING" }
-                            // "chart_data" object is REMOVED
-                        }
-                    }
+                // PART 2 IS NOW A SIMPLE STRING, NOT A COMPLEX ARRAY. THIS IS THE FIX.
+                "part2_blueprint_markdown": { 
+                    type: "STRING" 
                 }
             }
         };
@@ -650,12 +649,11 @@
             part2Output.innerHTML = "";
             generateBtn.disabled = true;
             generateBtn.innerText = "Generating...";
-            generatedData = null;
-            // activeCharts is removed
+            generatedData = null; // Clear old JSON data
+            generatedMarkdown = ""; // Clear old Markdown data
 
             try {
                 // 3. --- RUN THE "SMART RAG" SEARCH (CLIENT-SIDE) ---
-                // This is fast and reliable.
                 const relevantCaseStudies = simpleSearch(industry, objective, context);
                 
                 // 4. This is the "A++" Senior Partner Meta-Prompt (SIMPLIFIED AND FIXED)
@@ -705,7 +703,7 @@
                     Generate a comprehensive, two-part response. You MUST NOT hallucinate.
                     You MUST return *ONLY* a single, valid JSON object that adheres to the provided schema. Do not add any text before or after the JSON.
 
-                    # --- PART 1: ENGAGEMENT ANALYSIS ---
+                    # --- PART 1: ENGAGEMENT ANALYSIS (JSON) ---
                     (Fill this part of the JSON based on the client input and your persona.)
                     
                     **1. Analysis of Client Requirements (The Core Problem):**
@@ -723,15 +721,26 @@
                     **7. "UNBEATABLE" FEATURE 3 ("Red Team"):**
                        * Create an 'objection_handling' list. Proactively identify 2-3 tough objections the client might have (e.g., "This is too expensive," "Why not do this in-house?") and provide a clear, persuasive counter-argument for each.
                     
-                    # --- PART 2: PPT-READY PROPOSAL BLUEPRINT ---
-                    (Fill this part of the JSON based on the client input and your persona. Create 15-20 slides.)
-                    
-                    **MANDATORY REQUIREMENTS FOR PART 2:**
-                    * **Consulting Storyline (SCQA):** The slide order *must* follow a clear SCQA narrative arc.
-                    * **Persuasion (Smart RAG):** You MUST reference the 1-2 'RELEVANT CASE STUDIES' provided above as social proof in the 'key_content' of relevant slides.
-                    * **Rigor:** Do NOT invent facts. 'data_needed' should state what analysis is *needed*.
-                    * **"UNBEATABLE" FEATURE 4 (Reliable Data-Viz):** For *at least one* slide (like market sizing or a 2x2), in the 'visual_spec' string, you MUST generate a simple, text-based Markdown table for the data.
-                    * **Format:** Adhere *perfectly* to the JSON schema for every slide. (The 'chart_data' object is GONE).
+                    # --- PART 2: PPT-READY PROPOSAL BLUEPRINT (MARKDOWN STRING) ---
+                    (This part MUST be a single, long string. Generate 15-20 slides in clear Markdown.)
+                    (Use "###" for slide titles and "**" for labels like "Purpose:")
+
+                    ### Slide 1 (Title Slide)
+                    **Section:** Executive Summary
+                    **Title:** A Strategic Proposal for [Client's Core Problem]
+                    **Purpose:** To...
+                    **Key Message:** Our 12-week engagement will deliver...
+                    **Key Content:**
+                    * [Bullet 1]
+                    * [Bullet 2]
+                    **Visual Spec:** A clean, professional title slide.
+                    **Data Needed:** N/A
+                    **Build Guidance:** N/A
+
+                    ### Slide 2 (Executive Summary)
+                    **Section:** Executive Summary
+                    **Title:** Our Recommendation: A Phased Approach to [Client's Goal]
+                    ... (and so on for 15-20 slides) ...
                 `;
 
                 // 5. Make the API call *from the user's browser*.
@@ -761,8 +770,11 @@
                     const responseText = data.candidates[0].content.parts[0].text;
                     const parsedData = JSON.parse(responseText);
                     
-                    generatedData = parsedData; // Save for PPT export
-                    renderHtmlOutput(generatedData); // Render the HTML
+                    // Save both parts of the data globally
+                    generatedData = parsedData.part1_analysis; 
+                    generatedMarkdown = parsedData.part2_blueprint_markdown; 
+
+                    renderHtmlOutput(generatedData, generatedMarkdown); // Render the HTML
                     
                     downloadBtn.classList.remove('hidden'); // Show the download button
                 } else {
@@ -782,11 +794,10 @@
             }
         }
 
-        // --- NEW: Renders the rich JSON data as HTML ---
-        function renderHtmlOutput(data) {
-            // --- Render Part 1 ---
-            // Added error checking: if a property is missing, use an empty array/string
-            const p1 = data.part1_analysis || {};
+        // --- NEW: Renders both JSON (Part 1) and Markdown (Part 2) ---
+        function renderHtmlOutput(p1_data, p2_markdown) {
+            // --- Render Part 1 (from JSON) ---
+            const p1 = p1_data || {};
             let part1Html = `
                 <h2 class="text-2xl font-bold text-white mb-4">Part 1: Engagement Analysis</h2>
                 <div class="p-6 bg-slate-800/70 border border-slate-700 rounded-lg text-gray-300 prose-custom max-w-none">
@@ -815,61 +826,41 @@
             `;
             part1Output.innerHTML = part1Html;
 
-            // --- Render Part 2 ---
-            const p2 = data.part2_blueprint || [];
-            let part2Html = `<h2 class="text-2xl font-bold text-white mt-8 mb-4">Part 2: PPT-Ready Proposal Blueprint</h2>`;
-            
-            p2.forEach((slide, index) => {
-                const contentHtml = (slide.key_content || []).map(item => `<li>${item}</li>`).join('');
-                
-                // We no longer look for chart_data
-                
-                part2Html += `
-                    <details>
-                        <summary><strong>Slide ${slide.slide_number || (index + 1)} (${slide.section || 'N/A'}):</strong> ${slide.title || 'Untitled Slide'}</summary>
-                        <div>
-                            <p><strong>Purpose:</strong> ${slide.purpose || 'N/A'}</p>
-                            <p><strong>Key Message:</strong> ${slide.key_message || 'N/A'}</p>
-                            <br>
-                            
-                            <strong>Key Content:</strong>
-                            <ul>${contentHtml}</ul>
-                            <br>
-                            <div class="prose-custom">
-                                <strong>Visual Spec:</strong>
-                                <!-- This will now render Markdown tables -->
-                                ${markdownToHtml(slide.visual_spec || 'N/A')}
-                            </div>
-                            <p><strong>Data Needed:</strong> ${slide.data_needed || 'N/A'}</p>
-                            <p><strong>Build Guidance:</strong> ${slide.build_guidance || 'N/A'}</p>
-                        </div>
-                    </details>
-                `;
-            });
+            // --- Render Part 2 (from Markdown) ---
+            let part2Html = `
+                <h2 class="text-2xl font-bold text-white mt-8 mb-4">Part 2: PPT-Ready Proposal Blueprint</h2>
+                <div class="prose-custom max-w-none">
+                    ${markdownToHtml(p2_markdown || "<p>Part 2 was not generated. The AI may have failed to produce the slide blueprint. Please try again.</p>")}
+                </div>
+            `;
             part2Output.innerHTML = part2Html;
-            
-            // Chart rendering functions are now removed.
         }
         
-        // --- NEW: Simple Markdown to HTML converter for tables/bold ---
+        // --- NEW: Simple Markdown to HTML converter ---
         function markdownToHtml(md) {
-            if (!md) return 'N/A';
+            if (!md) return '';
 
-            let html = md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
-            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italics
-
+            let html = md.trim();
+            
+            // ### Slide 1 (Title) -> <h3>Slide 1 (Title)</h3>
+            html = html.replace(/### (.*?)\n/g, '<h3>$1</h3>');
+            
+            // **Label:** -> <strong>Label:</strong>
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
+            
+            // * Bullet -> <li>Bullet</li>
+            html = html.replace(/^\* (.*?)$/gm, '<li>$1</li>');
+            html = html.replace(/<li>(.*?)<\/li>\n(?!<li>)/g, '<li>$1</li></ul>'); // Close UL
+            html = html.replace(/(?!<\/ul>)<li>/g, '<ul><li>'); // Open UL
+            
             // Handle tables
             html = html.replace(/\|(.*?)\|\s*\n\|(.*?)\|\s*\n((?:\|.*?\n?)*)/g, (match, header, separator, body) => {
-                let table = '<table class="prose-table">'; // Use prose-custom styles
-                
-                // Header
+                let table = '<table>';
                 table += '<thead><tr>';
                 header.split('|').filter(h => h.trim()).forEach(h => {
                     table += `<th>${h.trim()}</th>`;
                 });
                 table += '</tr></thead>';
-
-                // Body
                 table += '<tbody>';
                 body.split('\n').filter(row => row.trim()).forEach(row => {
                     table += '<tr>';
@@ -882,14 +873,20 @@
                 return table;
             });
 
-            html = html.replace(/\n/g, '<br>'); // Newlines
+            // General newlines -> <p>
+            html = html.replace(/^(?!<h3>|<li>|<ul>|<table>)(.*)$/gm, '<p>$1</p>');
+            // Cleanup empty paragraphs
+            html = html.replace(/<p><\/p>/g, '');
+            // Fix paragraphs that are actually list headers
+            html = html.replace(/<p><strong>(.*?)<\/strong><\/p><ul>/g, '<strong>$1</strong><ul>');
+
             return html;
         }
 
-        // --- PPT Export Function (Updated for new JSON) ---
+        // --- PPT Export Function (REWRITTEN to parse Markdown) ---
         function handlePptxExport() {
-            if (!generatedData) {
-                showModal("Error", "No data to export. Please generate a proposal first.");
+            if (!generatedMarkdown) {
+                showModal("Error", "No proposal blueprint (Part 2) to export. Please generate a proposal first.");
                 return;
             }
             
@@ -914,53 +911,73 @@
             titleSlide.addNotes("Generated by StrategyVerse AI");
 
             // --- NEW: Part 1 Analysis Slide ---
-            let analysisSlide = pptx.addSlide();
-            analysisSlide.addText("Executive Summary: Engagement Analysis", { ...SLIDE_HEADLINE, y: 0.2, h: 0.5 });
-            
-            const p1 = generatedData.part1_analysis;
-            let analysisText = [
-                { text: 'Core Decision Problem:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
-                { text: p1.core_problem, options: { breakLine: true } },
-                { text: 'Proposed Scope of Work:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
-                { text: p1.scope_of_work, options: { breakLine: true } },
-                { text: 'Proposed Team & Fees:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
-                { text: p1.pricing_team, options: { breakLine: true } },
-                
-                // Add Red Team Objections
-                { text: '"Red Team" Objection Handling:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10, color: 'D9534F' } },
-                ...(p1.objection_handling || []).map(item => ({ text: item, options: { bullet: true, indent: 30 } })),
-                
-                // Add Stakeholders
-                { text: 'Stakeholder Analysis:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
-                ...(p1.stakeholder_analysis || []).map(item => ({ text: item, options: { bullet: true, indent: 30 } }))
-            ];
-            analysisSlide.addText(analysisText, { x: 0.5, y: 1.0, w: '90%', h: 6.0, fontSize: 11, fontFace: 'Inter', color: '31333F' });
+            if (generatedData) {
+                let analysisSlide = pptx.addSlide();
+                analysisSlide.addText("Executive Summary: Engagement Analysis", { ...SLIDE_HEADLINE, y: 0.2, h: 0.5 });
+                const p1 = generatedData;
+                let analysisText = [
+                    { text: 'Core Decision Problem:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
+                    { text: p1.core_problem, options: { breakLine: true } },
+                    { text: 'Proposed Scope of Work:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
+                    { text: p1.scope_of_work, options: { breakLine: true } },
+                    { text: 'Proposed Team & Fees:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
+                    { text: p1.pricing_team, options: { breakLine: true } },
+                    { text: '"Red Team" Objection Handling:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10, color: 'D9534F' } },
+                    ...(p1.objection_handling || []).map(item => ({ text: item, options: { bullet: true, indent: 30 } })),
+                    { text: 'Stakeholder Analysis:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
+                    ...(p1.stakeholder_analysis || []).map(item => ({ text: item, options: { bullet: true, indent: 30 } }))
+                ];
+                analysisSlide.addText(analysisText, { x: 0.5, y: 1.0, w: '90%', h: 6.0, fontSize: 11, fontFace: 'Inter', color: '31333F' });
+            }
 
+            // --- NEW: Parse Markdown for Part 2 Slides ---
+            const slides = generatedMarkdown.split('### ');
+            slides.shift(); // Remove empty element before the first "###"
 
-            // --- Loop through the blueprint slides ---
-            (generatedData.part2_blueprint || []).forEach(slide => {
+            for (const slideText of slides) {
                 let pptxSlide = pptx.addSlide();
+                
+                // Helper to extract text cleanly
+                const extract = (regex) => {
+                    const match = slideText.match(regex);
+                    return match ? match[1].trim() : '';
+                };
 
-                // Add content
-                pptxSlide.addText(slide.key_message || 'Missing Key Message', SLIDE_HEADLINE);
-                pptxSlide.addText(`Slide ${slide.slide_number || '?'} (${slide.section || 'N/A'}): ${slide.title || 'Untitled'}`, SLIDE_TITLE);
+                // Helper to extract bullets
+                const extractBullets = () => {
+                    const contentMatch = slideText.match(/\*\*Key Content:\*\*(.*?)(?=\*\*|$)/s);
+                    if (!contentMatch) return ['Missing content'];
+                    return contentMatch[1].split('* ')
+                                        .map(b => b.trim())
+                                        .filter(b => b.length > 0);
+                };
+
+                const slideTitle = slideText.substring(0, slideText.indexOf('\n')).trim();
+                const section = extract(/\*\*Section:\*\*(.*?)\n/);
+                const purpose = extract(/\*\*Purpose:\*\*(.*?)\n/);
+                const keyMessage = extract(/\*\*Key Message:\*\*(.*?)\n/);
+                const visualSpec = extract(/\*\*Visual Spec:\*\*(.*?)\n/);
+                const dataNeeded = extract(/\*\*Data Needed:\*\*(.*?)\n/);
+                const buildGuidance = extract(/\*\*Build Guidance:\*\*(.*?)\n/);
+                const keyContent = extractBullets();
+
+                // Add to PPTx
+                pptxSlide.addText(keyMessage || "Missing Key Message", SLIDE_HEADLINE);
+                pptxSlide.addText(`${section}: ${slideTitle}`, SLIDE_TITLE);
+                pptxSlide.addText(keyContent, SLIDE_BODY);
                 
-                // Add bullet points
-                pptxSlide.addText(slide.key_content || ['Missing content'], SLIDE_BODY);
-                
-                // Add visual spec and data as speaker notes
                 const notes = `
                     VISUAL SPEC:
-                    ${slide.visual_spec || 'N/A'}
+                    ${visualSpec || 'N/A'}
 
                     DATA NEEDED:
-                    ${slide.data_needed || 'N/A'}
+                    ${dataNeeded || 'N/A'}
 
                     BUILD GUIDANCE:
-                    ${slide.build_guidance || 'N/A'}
+                    ${buildGuidance || 'N/A'}
                 `;
                 pptxSlide.addNotes(notes, SLIDE_NOTES_STYLE);
-            });
+            }
 
             // --- Thank You Slide ---
             let thankYouSlide = pptx.addSlide();
