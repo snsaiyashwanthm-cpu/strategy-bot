@@ -8,8 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 2. PptxGenJS for PowerPoint Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
-    <!-- 3. Chart.js for Live Data-Viz -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 3. Chart.js is REMOVED for reliability -->
     
     <style>
         /* AESTHETIC CHANGE: Use a modern 'Inter' font */
@@ -111,6 +110,23 @@
         .prose-custom li {
             padding-left: 0.5rem;
             margin-bottom: 0.5em;
+        }
+        /* NEW: Styles for Markdown Tables */
+        .prose-custom table {
+            width: 100%;
+            margin-top: 1em;
+            margin-bottom: 1em;
+            border-collapse: collapse;
+        }
+        .prose-custom th, .prose-custom td {
+            border: 1px solid #475569; /* slate-600 */
+            padding: 0.5rem 0.75rem;
+            color: #cbd5e1; /* slate-300 */
+        }
+        .prose-custom th {
+            background-color: #334155; /* slate-700 */
+            font-weight: 600;
+            color: #e2e8f0; /* slate-200 */
         }
 
     </style>
@@ -306,7 +322,7 @@
         
         // --- Store the generated data globally ---
         let generatedData = null; // This will hold the JSON response
-        let activeCharts = []; // To destroy old charts
+        // activeCharts is removed
 
         // --- Get all UI elements ---
         const tabBtnGen = document.getElementById('tab-btn-generator');
@@ -564,6 +580,7 @@
         // -----------------------------------------------------------------
         
         // This is the JSON schema that we *demand* the AI responds with.
+        // It has been SIMPLIFIED to be reliable. Live Data-Viz is removed.
         const responseSchema = {
             type: "OBJECT",
             properties: {
@@ -590,29 +607,10 @@
                             "purpose": { type: "STRING" },
                             "key_message": { type: "STRING" },
                             "key_content": { type: "ARRAY", items: { type: "STRING" } },
-                            "visual_spec": { type: "STRING" },
+                            "visual_spec": { type: "STRING" }, // We will ask for Markdown tables here
                             "data_needed": { type: "STRING" },
-                            "build_guidance": { type: "STRING" },
-                            "chart_data": {
-                                type: "OBJECT",
-                                nullable: true,
-                                properties: {
-                                    "type": { type: "STRING" },
-                                    "labels": { type: "ARRAY", items: { type: "STRING" } },
-                                    "datasets": {
-                                        type: "ARRAY",
-                                        items: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                "label": { type: "STRING" },
-                                                "data": { type: "ARRAY", items: { type: "NUMBER" } },
-                                            }
-                                        }
-                                    },
-                                    "x_axis_label": { type: "STRING", nullable: true },
-                                    "y_axis_label": { type: "STRING", nullable: true }
-                                }
-                            }
+                            "build_guidance": { type: "STRING" }
+                            // "chart_data" object is REMOVED
                         }
                     }
                 }
@@ -625,7 +623,7 @@
         
         // --- API Key (This MUST be a RESTRICTED key) ---
         // This is the only place you need to paste your key.
-        const API_KEY = "AIzaSyDUlVamN2fCLWHLa_9fW3B1Eq6nQ2V90tc"; 
+        const API_KEY = "PASTE_YOUR_NEW_RESTRICTED_API_KEY_HERE"; 
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${API_KEY}`;
         
         async function handleGenerate() {
@@ -653,15 +651,14 @@
             generateBtn.disabled = true;
             generateBtn.innerText = "Generating...";
             generatedData = null;
-            activeCharts.forEach(chart => chart.destroy());
-            activeCharts = [];
+            // activeCharts is removed
 
             try {
                 // 3. --- RUN THE "SMART RAG" SEARCH (CLIENT-SIDE) ---
                 // This is fast and reliable.
                 const relevantCaseStudies = simpleSearch(industry, objective, context);
                 
-                // 4. This is the "A++" Senior Partner Meta-Prompt.
+                // 4. This is the "A++" Senior Partner Meta-Prompt (SIMPLIFIED AND FIXED)
                 const finalPrompt = `
                     # YOUR ROLE
                     You are a 3-person team:
@@ -733,8 +730,8 @@
                     * **Consulting Storyline (SCQA):** The slide order *must* follow a clear SCQA narrative arc.
                     * **Persuasion (Smart RAG):** You MUST reference the 1-2 'RELEVANT CASE STUDIES' provided above as social proof in the 'key_content' of relevant slides.
                     * **Rigor:** Do NOT invent facts. 'data_needed' should state what analysis is *needed*.
-                    * **"UNBEATABLE" FEATURE 4 (Live Data-Viz):** For *at least one* slide (like market sizing or a 2x2), you MUST populate the 'chart_data' object. For a 2x2, use type: 'bubble' and provide x/y labels. For other charts, use 'bar' or 'pie'.
-                    * **Format:** Adhere *perfectly* to the JSON schema for every slide.
+                    * **"UNBEATABLE" FEATURE 4 (Reliable Data-Viz):** For *at least one* slide (like market sizing or a 2x2), in the 'visual_spec' string, you MUST generate a simple, text-based Markdown table for the data.
+                    * **Format:** Adhere *perfectly* to the JSON schema for every slide. (The 'chart_data' object is GONE).
                 `;
 
                 // 5. Make the API call *from the user's browser*.
@@ -774,9 +771,9 @@
 
             } catch (error) {
                 console.error("Error:", error);
-                // This will catch the "Unexpected end of JSON input" if the API call fails
-                // or if the key is wrong.
-                showModal("Generation Error", `An error occurred: ${error.message}. Please check that your API key is correct and properly restricted to this domain.`);
+                // This will catch the "Cannot read properties of undefined (reading 'map')"
+                // if the API call fails or the JSON is bad.
+                showModal("Generation Error", `An error occurred: ${error.message}. This is often due to a malformed JSON response from the AI. Try a slightly simpler prompt or check the console (F12) for details.`);
             } finally {
                 // 9. Reset UI
                 loadingSpinner.classList.add('hidden');
@@ -785,151 +782,108 @@
             }
         }
 
-        // --- NEW: Renders the rich JSON data as HTML (now with charts!) ---
+        // --- NEW: Renders the rich JSON data as HTML ---
         function renderHtmlOutput(data) {
             // --- Render Part 1 ---
-            const p1 = data.part1_analysis;
+            // Added error checking: if a property is missing, use an empty array/string
+            const p1 = data.part1_analysis || {};
             let part1Html = `
                 <h2 class="text-2xl font-bold text-white mb-4">Part 1: Engagement Analysis</h2>
                 <div class="p-6 bg-slate-800/70 border border-slate-700 rounded-lg text-gray-300 prose-custom max-w-none">
                     
                     <h4>Core Decision Problem:</h4>
-                    <p>${p1.core_problem}</p>
+                    <p>${p1.core_problem || "Not generated."}</p>
 
                     <h4>Proposed Scope of Work:</h4>
-                    <p>${p1.scope_of_work}</p>
+                    <p>${p1.scope_of_work || "Not generated."}</p>
 
                     <h4>Proposed Team & Fees:</h4>
-                    <p>${p1.pricing_team}</p>
+                    <p>${p1.pricing_team || "Not generated."}</p>
 
                     <h4>Key Assumptions:</h4>
-                    <ul>${p1.assumptions.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <ul>${(p1.assumptions || []).map(item => `<li>${item}</li>`).join('')}</ul>
 
                     <h4>Potential Risks & Mitigation:</h4>
-                    <ul>${p1.risks.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <ul>${(p1.risks || []).map(item => `<li>${item}</li>`).join('')}</ul>
 
                     <h4>Stakeholder Analysis & Alignment:</h4>
-                    <ul>${p1.stakeholder_analysis.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <ul>${(p1.stakeholder_analysis || []).map(item => `<li>${item}</li>`).join('')}</ul>
                     
                     <h4><span style="color: #f87171;">"Red Team"</span> Objection Handling:</h4>
-                    <ul>${p1.objection_handling.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <ul>${(p1.objection_handling || []).map(item => `<li>${item}</li>`).join('')}</ul>
                 </div>
             `;
             part1Output.innerHTML = part1Html;
 
             // --- Render Part 2 ---
-            const p2 = data.part2_blueprint;
+            const p2 = data.part2_blueprint || [];
             let part2Html = `<h2 class="text-2xl font-bold text-white mt-8 mb-4">Part 2: PPT-Ready Proposal Blueprint</h2>`;
             
             p2.forEach((slide, index) => {
-                const contentHtml = slide.key_content.map(item => `<li>${item}</li>`).join('');
+                const contentHtml = (slide.key_content || []).map(item => `<li>${item}</li>`).join('');
                 
-                // FEATURE 2 (Live Data-Viz): Check if this slide has chart data
-                const chartId = `chart-${index}`;
-                const hasChart = slide.chart_data && slide.chart_data.type;
+                // We no longer look for chart_data
                 
                 part2Html += `
                     <details>
-                        <summary><strong>Slide ${slide.slide_number} (${slide.section}):</strong> ${slide.title}</summary>
+                        <summary><strong>Slide ${slide.slide_number || (index + 1)} (${slide.section || 'N/A'}):</strong> ${slide.title || 'Untitled Slide'}</summary>
                         <div>
-                            <p><strong>Purpose:</strong> ${slide.purpose}</p>
-                            <p><strong>Key Message:</strong> ${slide.key_message}</p>
+                            <p><strong>Purpose:</strong> ${slide.purpose || 'N/A'}</p>
+                            <p><strong>Key Message:</strong> ${slide.key_message || 'N/A'}</p>
                             <br>
                             
-                            <!-- If chart data exists, create a canvas for it -->
-                            ${hasChart ? `
-                                <div class="bg-white/90 p-4 rounded-lg my-4 max-w-2xl mx-auto">
-                                    <canvas id="${chartId}"></canvas>
-                                </div>
-                            ` : ''}
-
                             <strong>Key Content:</strong>
                             <ul>${contentHtml}</ul>
                             <br>
-                            <p><strong>Visual Spec:</strong> ${slide.visual_spec}</p>
-                            <p><strong>Data Needed:</strong> ${slide.data_needed}</p>
-                            <p><strong>Build Guidance:</strong> ${slide.build_guidance}</p>
+                            <div class="prose-custom">
+                                <strong>Visual Spec:</strong>
+                                <!-- This will now render Markdown tables -->
+                                ${markdownToHtml(slide.visual_spec || 'N/A')}
+                            </div>
+                            <p><strong>Data Needed:</strong> ${slide.data_needed || 'N/A'}</p>
+                            <p><strong>Build Guidance:</strong> ${slide.build_guidance || 'N/A'}</p>
                         </div>
                     </details>
                 `;
             });
             part2Output.innerHTML = part2Html;
             
-            // --- FEATURE 2 (Live Data-Viz): Now, render the charts ---
-            p2.forEach((slide, index) => {
-                if (slide.chart_data && slide.chart_data.type) {
-                    renderChart(slide.chart_data, `chart-${index}`);
-                }
-            });
+            // Chart rendering functions are now removed.
         }
         
-        // --- NEW: Chart.js rendering function ---
-        function renderChart(chartData, canvasId) {
-            const ctx = document.getElementById(canvasId);
-            if (!ctx) return;
-            
-            // Default chart options for a "consulting" look
-            const chartOptions = {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { color: '#333' }
-                    },
-                    tooltip: {
-                        backgroundColor: '#000',
-                        titleColor: '#fff',
-                        bodyColor: '#fff'
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { color: '#555' },
-                        grid: { color: 'rgba(0,0,0,0.1)' }
-                    },
-                    y: {
-                        ticks: { color: '#555' },
-                        grid: { color: 'rgba(0,0,0,0.1)' }
-                    }
-                }
-            };
-            
-            let chartConfig = {
-                type: chartData.type, // e.g., 'bar', 'line', 'pie', 'doughnut'
-                data: {
-                    labels: chartData.labels,
-                    datasets: chartData.datasets.map(ds => ({
-                        label: ds.label,
-                        data: ds.data,
-                        // Pre-defined "MBB" color palette
-                        backgroundColor: ds.type === 'line' ? 'transparent' : ['#00529B', '#00A3E0', '#6D28D9', '#059669', '#D97706'],
-                        borderColor: ds.type === 'line' ? '#00529B' : '#ffffff',
-                        borderWidth: 2,
-                        fill: ds.type === 'line'
-                    }))
-                },
-                options: chartOptions
-            };
-            
-            // Special handling for 2x2 Matrix (which Chart.js calls a "bubble" chart)
-            if (chartData.type === 'bubble') {
-                chartConfig.options.scales = {
-                    x: {
-                        title: { display: true, text: chartData.x_axis_label, color: '#333' },
-                        grid: { color: 'rgba(0,0,0,0.1)' },
-                        ticks: { color: '#555' }
-                    },
-                    y: {
-                        title: { display: true, text: chartData.y_axis_label, color: '#333' },
-                        grid: { color: 'rgba(0,0,0,0.1)' },
-                        ticks: { color: '#555' }
-                    }
-                };
-            }
+        // --- NEW: Simple Markdown to HTML converter for tables/bold ---
+        function markdownToHtml(md) {
+            if (!md) return 'N/A';
 
-            const newChart = new Chart(ctx.getContext('2d'), chartConfig);
-            activeCharts.push(newChart); // Store for later destruction
+            let html = md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italics
+
+            // Handle tables
+            html = html.replace(/\|(.*?)\|\s*\n\|(.*?)\|\s*\n((?:\|.*?\n?)*)/g, (match, header, separator, body) => {
+                let table = '<table class="prose-table">'; // Use prose-custom styles
+                
+                // Header
+                table += '<thead><tr>';
+                header.split('|').filter(h => h.trim()).forEach(h => {
+                    table += `<th>${h.trim()}</th>`;
+                });
+                table += '</tr></thead>';
+
+                // Body
+                table += '<tbody>';
+                body.split('\n').filter(row => row.trim()).forEach(row => {
+                    table += '<tr>';
+                    row.split('|').filter(c => c.trim()).forEach(c => {
+                        table += `<td>${c.trim()}</td>`;
+                    });
+                    table += '</tr>';
+                });
+                table += '</tbody></table>';
+                return table;
+            });
+
+            html = html.replace(/\n/g, '<br>'); // Newlines
+            return html;
         }
 
         // --- PPT Export Function (Updated for new JSON) ---
@@ -974,38 +928,36 @@
                 
                 // Add Red Team Objections
                 { text: '"Red Team" Objection Handling:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10, color: 'D9534F' } },
-                ...p1.objection_handling.map(item => ({ text: item, options: { bullet: true, indent: 30 } })),
+                ...(p1.objection_handling || []).map(item => ({ text: item, options: { bullet: true, indent: 30 } })),
                 
                 // Add Stakeholders
                 { text: 'Stakeholder Analysis:', options: { bold: true, breakLine: true, indent: 0, paraSpaceBefore: 10 } },
-                ...p1.stakeholder_analysis.map(item => ({ text: item, options: { bullet: true, indent: 30 } }))
+                ...(p1.stakeholder_analysis || []).map(item => ({ text: item, options: { bullet: true, indent: 30 } }))
             ];
             analysisSlide.addText(analysisText, { x: 0.5, y: 1.0, w: '90%', h: 6.0, fontSize: 11, fontFace: 'Inter', color: '31333F' });
 
 
             // --- Loop through the blueprint slides ---
-            generatedData.part2_blueprint.forEach(slide => {
+            (generatedData.part2_blueprint || []).forEach(slide => {
                 let pptxSlide = pptx.addSlide();
 
                 // Add content
-                pptxSlide.addText(slide.key_message, SLIDE_HEADLINE);
-                pptxSlide.addText(`Slide ${slide.slide_number} (${slide.section}): ${slide.title}`, SLIDE_TITLE);
+                pptxSlide.addText(slide.key_message || 'Missing Key Message', SLIDE_HEADLINE);
+                pptxSlide.addText(`Slide ${slide.slide_number || '?'} (${slide.section || 'N/A'}): ${slide.title || 'Untitled'}`, SLIDE_TITLE);
                 
                 // Add bullet points
-                pptxSlide.addText(slide.key_content, SLIDE_BODY);
+                pptxSlide.addText(slide.key_content || ['Missing content'], SLIDE_BODY);
                 
                 // Add visual spec and data as speaker notes
                 const notes = `
                     VISUAL SPEC:
-                    ${slide.visual_spec}
+                    ${slide.visual_spec || 'N/A'}
 
                     DATA NEEDED:
-                    ${slide.data_needed}
+                    ${slide.data_needed || 'N/A'}
 
                     BUILD GUIDANCE:
-                    ${slide.build_guidance}
-                    
-                    ${slide.chart_data ? `CHART DATA:\n${JSON.stringify(slide.chart_data, null, 2)}` : ''}
+                    ${slide.build_guidance || 'N/A'}
                 `;
                 pptxSlide.addNotes(notes, SLIDE_NOTES_STYLE);
             });
